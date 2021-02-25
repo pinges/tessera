@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public enum Launcher {
     NORMAL {
         @Override
-        public void launchServer(Config config) throws Exception {
+        public List<TesseraServer> launchServer(Config config) throws Exception {
             LOGGER.debug("Creating servers");
             final List<TesseraServer> servers =
                     config.getServerConfigs().stream()
@@ -59,12 +59,13 @@ public enum Launcher {
                 LOGGER.debug("Started server {}", ts);
             }
             LOGGER.debug("Created servers");
+            return servers;
         }
     },
 
     RECOVERY {
         @Override
-        public void launchServer(Config config) throws Exception {
+        public List<TesseraServer> launchServer(Config config) throws Exception {
 
             final ServerConfig recoveryP2PServer = config.getP2PServerConfig();
 
@@ -100,12 +101,13 @@ public enum Launcher {
             final int exitCode = RecoveryFactory.newFactory().create(config).recover();
 
             System.exit(exitCode);
+            return null;
         }
     };
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Launcher.class);
 
-    public abstract void launchServer(Config config) throws Exception;
+    public abstract List<TesseraServer> launchServer(Config config) throws Exception;
 
     public static Launcher create(boolean isRecoveryMode) {
         if (isRecoveryMode) {
