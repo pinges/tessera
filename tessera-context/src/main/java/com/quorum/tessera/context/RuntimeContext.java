@@ -43,4 +43,6 @@ public interface RuntimeContext {
     static RuntimeContext getInstance() {
         return ContextHolder.getInstance().getContext().get();
     }
+
+    void setP2PServer(URI p2pServer);
 }

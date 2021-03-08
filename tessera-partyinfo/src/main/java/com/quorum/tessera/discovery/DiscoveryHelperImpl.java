@@ -34,20 +34,22 @@ public class DiscoveryHelperImpl implements DiscoveryHelper {
         RuntimeContext runtimeContext = RuntimeContext.getInstance();
 
         final NodeUri nodeUri =
-            Optional.of(runtimeContext).map(RuntimeContext::getP2pServerUri).map(NodeUri::create).get();
+                Optional.of(runtimeContext).map(RuntimeContext::getP2pServerUri).map(NodeUri::create).get();
 
         ActiveNode thisNode =
-            ActiveNode.Builder.create()
-                .withUri(nodeUri)
-                .withKeys(enclave.getPublicKeys())
-                .withSupportedVersions(ApiVersion.versions())
-                .build();
+                ActiveNode.Builder.create()
+                        .withUri(nodeUri)
+                        .withKeys(enclave.getPublicKeys())
+                        .withSupportedVersions(ApiVersion.versions())
+                        .build();
 
         networkStore.store(thisNode);
     }
 
     @Override
     public NodeInfo buildCurrent() {
+
+        onCreate();
 
         final URI uri = RuntimeContext.getInstance().getP2pServerUri();
         final NodeUri nodeUri = NodeUri.create(uri);
@@ -103,16 +105,21 @@ public class DiscoveryHelperImpl implements DiscoveryHelper {
 
         final NodeUri uri = NodeUri.create(RuntimeContext.getInstance().getP2pServerUri());
 
-        return networkStore.getActiveNodes()
-            .filter(n -> !n.getUri().equals(uri))
-            .map(activeNode -> {
-                String url = activeNode.getUri().asString();
-                return NodeInfo.Builder.create()
-                    .withUrl(url)
-                    .withRecipients(activeNode.getKeys().stream().map(k -> Recipient.of(k, url)).collect(Collectors.toSet()))
-                    .withSupportedApiVersions(activeNode.getSupportedVersions())
-                    .build();
-            }
-        ).collect(Collectors.toSet());
+        return networkStore
+                .getActiveNodes()
+                .filter(n -> !n.getUri().equals(uri))
+                .map(
+                        activeNode -> {
+                            String url = activeNode.getUri().asString();
+                            return NodeInfo.Builder.create()
+                                    .withUrl(url)
+                                    .withRecipients(
+                                            activeNode.getKeys().stream()
+                                                    .map(k -> Recipient.of(k, url))
+                                                    .collect(Collectors.toSet()))
+                                    .withSupportedApiVersions(activeNode.getSupportedVersions())
+                                    .build();
+                        })
+                .collect(Collectors.toSet());
     }
 }
