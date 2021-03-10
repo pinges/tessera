@@ -49,8 +49,6 @@ public class DiscoveryHelperImpl implements DiscoveryHelper {
     @Override
     public NodeInfo buildCurrent() {
 
-        onCreate();
-
         final URI uri = RuntimeContext.getInstance().getP2pServerUri();
         final NodeUri nodeUri = NodeUri.create(uri);
         final List<ActiveNode> activeNodes = networkStore.getActiveNodes().collect(Collectors.toList());
@@ -80,10 +78,7 @@ public class DiscoveryHelperImpl implements DiscoveryHelper {
                         .getActiveNodes()
                         .filter(node -> node.getKeys().contains(recipientKey))
                         .findAny()
-                        .orElseThrow(
-                                () ->
-                                        new KeyNotFoundException(
-                                                "Recipient not found for key: " + recipientKey.encodeToBase64()));
+                        .orElseThrow(() -> new KeyNotFoundException("NodeMissingPeerUrl"));
 
         final String nodeUrl = activeNode.getUri().asString();
 

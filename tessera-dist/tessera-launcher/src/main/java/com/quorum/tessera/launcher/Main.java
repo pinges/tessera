@@ -116,8 +116,6 @@ public class Main {
             final String urlString = cliResult.getConfig().get().getJdbcConfig().getUrl();
             final String dirPath = urlString.split(":")[2].split(";")[0];
 
-            System.out.println("Directory: " + dirPath);
-
             FileWriter fileWriter = new FileWriter(new File(dirPath, "q2tServer.uri"));
             fileWriter.write(q2tServer.getUri().toString());
             fileWriter.flush();

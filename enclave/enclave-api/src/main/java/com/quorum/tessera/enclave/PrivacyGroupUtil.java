@@ -44,12 +44,8 @@ public interface PrivacyGroupUtil extends BinaryEncoder {
 
     default byte[] encode(final PrivacyGroup privacyGroup) {
 
-        final byte[] name =
-                privacyGroup.getName() != null ? encodeField(privacyGroup.getName().getBytes()) : "".getBytes();
-        final byte[] description =
-                privacyGroup.getDescription() != null
-                        ? encodeField(privacyGroup.getDescription().getBytes())
-                        : "".getBytes();
+        final byte[] name = encodeField(privacyGroup.getName().getBytes());
+        final byte[] description = encodeField(privacyGroup.getDescription().getBytes());
         final byte[] members =
                 encodeArray(
                         privacyGroup.getMembers().stream()

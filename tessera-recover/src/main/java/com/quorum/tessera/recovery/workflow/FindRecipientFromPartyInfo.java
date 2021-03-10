@@ -20,10 +20,7 @@ public class FindRecipientFromPartyInfo implements BatchWorkflowAction {
                 discovery.getCurrent().getRecipients().stream()
                         .filter(recipient -> recipientKey.equals(recipient.getKey()))
                         .findAny()
-                        .orElseThrow(
-                                () ->
-                                        new KeyNotFoundException(
-                                                "Recipient not found for key: " + recipientKey.encodeToBase64()));
+                        .orElseThrow(() -> new KeyNotFoundException("NodeMissingPeerUrl"));
 
         event.setRecipient(retrievedRecipientFromStore);
 

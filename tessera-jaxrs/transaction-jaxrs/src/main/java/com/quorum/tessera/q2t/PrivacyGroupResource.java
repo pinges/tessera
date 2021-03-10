@@ -19,6 +19,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -72,6 +73,14 @@ public class PrivacyGroupResource {
                         .map(PublicKey::from)
                         .orElseGet(privacyGroupManager::defaultPublicKey);
 
+        final String[] addresses = request.getAddresses();
+        if (addresses == null || addresses.length == 0 /* || addresses does not contain one of my own keys */) {
+
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Entity.text("CreatePrivacyGroupShouldIncludeSelf"))
+                    .build();
+        }
+
         final List<PublicKey> members =
                 Arrays.stream(request.getAddresses())
                         .map(base64Codec::decode)
@@ -84,7 +93,8 @@ public class PrivacyGroupResource {
         final String name = Optional.ofNullable(request.getName()).orElse("");
         final String description = Optional.ofNullable(request.getDescription()).orElse("");
 
-        final PrivacyGroup created = privacyGroupManager.createPrivacyGroup(name, description, from, members, randomSeed);
+        final PrivacyGroup created =
+                privacyGroupManager.createPrivacyGroup(name, description, from, members, randomSeed);
 
         return Response.status(Response.Status.OK).entity(toResponseObject(created)).build();
     }
@@ -199,8 +209,8 @@ public class PrivacyGroupResource {
     PrivacyGroupResponse toResponseObject(final PrivacyGroup privacyGroup) {
         return new PrivacyGroupResponse(
                 privacyGroup.getId().getBase64(),
-                privacyGroup.getName() != null ? privacyGroup.getName() : "",
-                privacyGroup.getDescription() != null ? privacyGroup.getDescription() : "",
+                privacyGroup.getName(),
+                privacyGroup.getDescription(),
                 privacyGroup.getType().name(),
                 privacyGroup.getMembers().stream().map(PublicKey::encodeToBase64).toArray(String[]::new));
     }

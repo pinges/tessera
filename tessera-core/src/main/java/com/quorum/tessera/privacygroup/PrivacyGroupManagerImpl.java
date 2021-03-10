@@ -121,6 +121,11 @@ public class PrivacyGroupManagerImpl implements PrivacyGroupManager {
 
         final byte[] lookupId = privacyGroupUtil.generateLookupId(members);
 
+        //        return privacyGroupDAO.findByLookupId(lookupId).stream()
+        //            .map(PrivacyGroupEntity::getData)
+        //            .map(privacyGroupUtil::decode)
+        //            .filter(pg -> pg.getState() == PrivacyGroup.State.ACTIVE)
+        //            .collect(Collectors.toUnmodifiableList());
         final PrivacyGroup[] privacyGroups =
                 privacyGroupDAO.findByLookupId(lookupId).stream()
                         .map(PrivacyGroupEntity::getData)
